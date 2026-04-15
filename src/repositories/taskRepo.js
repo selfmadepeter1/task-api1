@@ -1,18 +1,21 @@
 import prisma from '../config/db.js';
 
-export async function findAll() {
-  const filter = {};
-  if (completed !== undefined) {
-    filter.completed = completed;
-  }
-  return await prisma.task.findMany({
-    where: filter
-  });
-}
+export const findAll = async (completed) => {
+  const queryOptions = {};
 
-// Create a new task
+  // If completed is true or false, we add the filter.
+  // If it's undefined, we don't add 'where', so Prisma returns ALL tasks.
+  if (completed !== undefined) {
+    queryOptions.where = {
+      completed: completed
+    };
+  }
+
+  return await prisma.task.findMany(queryOptions);
+};
+
 export async function create(data) {
-  return prisma.task.create({
+  return await prisma.task.create({
     data,
   });
 }

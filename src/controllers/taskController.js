@@ -1,20 +1,35 @@
 import * as taskService from '../services/taskService.js';
 
 export async function getTasks(req, res, next) {
+  try {
+    const { completed } = req.query;
 
-  const { completed } = req.query;
-  if (completed !== undefined && completed !== 'true' && completed !== 'false') {
-  return res.status(400).json({ message: "Invalid value" });
-}
-  const isCompleted = completed === 'true' ? true : completed === 'false' ? false : undefined;
-  const tasks = await taskService.getAllTasks(isCompleted);
-  res.json(tasks);
+   
+    let isCompleted;
+    if (completed === 'true') {
+      isCompleted = true;
+    } else if (completed === 'false') {
+      isCompleted = false;
+    } else {
+      isCompleted = undefined; 
+    }
+
+    
+    const tasks = await taskService.getAllTasks(isCompleted);
+
+    
+    res.json(tasks);
+  } catch (error) {
+    next(error);
+  }
 }
 
 export async function createTask(req, res, next) {
-  const { title, completed } = req.body;
-  const task = await taskService.createTask({ title, completed });
-  res.status(201).json(task);
+  try {
+    const { title, completed } = req.body;
+    const task = await taskService.createTask({ title, completed });
+    res.status(201).json(task);
+  } catch (error) {
+    next(error);
+  }
 }
-
-
